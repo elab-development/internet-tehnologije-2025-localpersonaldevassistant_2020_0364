@@ -1,7 +1,9 @@
+import LoginPage from "./pages/LoginPage";
+
 function App() {
   return (
     <>
-      <h2>Main Page</h2>
+      <LoginPage />
     </>
   );
 }

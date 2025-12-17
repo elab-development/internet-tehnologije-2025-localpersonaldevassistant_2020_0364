@@ -1,0 +1,34 @@
+#loginForm {
+  height: 100px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 7px;
+}
+
+#loginForm > input {
+  border: 1px solid white;
+  padding: 5px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#loginForm > input:focus {
+  border: 1px solid white;
+  outline: none;
+}
+
+#logInButton {
+  background-color: #ff8427;
+  padding: 5px;
+  font-weight: bolder;
+  font-size: 15px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+#logInButton:hover {
+  cursor: pointer;
+}
