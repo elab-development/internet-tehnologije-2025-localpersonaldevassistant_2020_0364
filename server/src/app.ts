@@ -1,16 +1,17 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import authRoutes from "./routes/auth.routes";
 
 const app: Application = express();
 
 app.use(helmet());
-
 app.use(cors({ origin: "http://localhost:5173", methods: ["GET", "POST", "PUT", "DELETE"], credentials: true }));
-
 app.use(express.json());
 
 // Routes
+app.use("/api", authRoutes);
+
 app.get("/api/health", (req: Request, res: Response) => {
   res.json({ message: "Backend Server is running!" });
 });
