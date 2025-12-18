@@ -11,3 +11,11 @@ body {
   padding: 0;
   border: 0;
 }
+
+:root {
+  --primary-color: #4d8b31;
+  --secondary-color: #ffc800;
+  --accent-color: #ff8427;
+  --text-color: #ffffff;
+  --background-color: #363537;
+}
