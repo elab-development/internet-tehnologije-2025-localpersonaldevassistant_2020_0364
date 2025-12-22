@@ -32,4 +32,36 @@ export class AuthController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  static async register(req: Request, res: Response): Promise<void> {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        res.status(400).json({ message: "Username and password are required." });
+        return;
+      }
+
+      const userRepo = AppDataSource.getRepository(User);
+
+      const existingUser = await userRepo.findOneBy({ username });
+      if (existingUser) {
+        res.status(409).json({ message: "Username already exists." });
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = new User();
+      newUser.username = username;
+      newUser.password = hashedPassword;
+
+      await userRepo.save(newUser);
+
+      res.status(201).json({ message: "User registered successfully" });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }

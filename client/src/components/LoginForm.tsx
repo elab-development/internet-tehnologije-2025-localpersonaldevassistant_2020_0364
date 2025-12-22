@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import "./LoginForm.css";
 import CommunicationController from "../communication/CommunicationController";
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   function handleLoginClick(e: FormEvent) {
@@ -25,13 +26,13 @@ const LoginForm = () => {
 
   return (
     <form id="loginForm" onSubmit={handleLoginClick}>
-      <input id="usernameInputField" type="text" name="usernameInputField" />
-      <input id="passwordInputField" type="password" name="passwordInputField" />
+      <input id="usernameInputField" type="text" name="usernameInputField" placeholder="Username" />
+      <input id="passwordInputField" type="password" name="passwordInputField" placeholder="Password" />
       <button id="logInButton" type="submit">
         LOG IN
       </button>
       <a href="">Continue as guest</a>
-      <a href="">Create new account</a>
+      <Link to="/register">Create new account</Link>
     </form>
   );
 };

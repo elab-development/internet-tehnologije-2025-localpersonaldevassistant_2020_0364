@@ -1,0 +1,34 @@
+#registerForm {
+  height: 100px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 7px;
+}
+
+#registerForm > input {
+  border: 1px solid white;
+  padding: 5px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#registerForm > input:focus {
+  border: 1px solid white;
+  outline: none;
+}
+
+#registerButton {
+  background-color: #ff8427;
+  padding: 5px;
+  font-weight: bolder;
+  font-size: 15px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+#registerButton:hover {
+  cursor: pointer;
+}
