@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Session } from "./Session";
 
 @Entity()
 export class User {
@@ -16,4 +17,10 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @Column({ nullable: true })
+  lastLoginAt!: Date;
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions!: Session[];
 }

@@ -8,6 +8,8 @@ class CommunicationController {
   static async sendRequest(method: HTTPRequestMethod, api: string, { queryParams = {}, body = {}, headers = {} }): Promise<Response> {
     let response: AxiosResponse;
 
+    headers = { ...headers, Authorization: `Bearer ${localStorage.getItem("token") || ""}` };
+
     try {
       switch (method) {
         case "GET":

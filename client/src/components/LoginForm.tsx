@@ -15,8 +15,12 @@ const LoginForm = () => {
 
     CommunicationController.sendRequest("POST", "/api/login", { body: { username, password } }).then((response) => {
       if (response.ok) {
-        console.log("Login successful!");
         console.log(response);
+
+        const payload = response.payload as { token: string; message: string };
+        localStorage.setItem("token", payload.token);
+
+        console.log("Login successful and token set!");
       } else {
         console.log(":(((((((((((((((");
         console.log(response);
