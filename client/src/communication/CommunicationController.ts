@@ -13,7 +13,6 @@ class CommunicationController {
     try {
       switch (method) {
         case "GET":
-          console.log(api);
           response = await axios.get(api, {
             params: queryParams,
             headers: headers,

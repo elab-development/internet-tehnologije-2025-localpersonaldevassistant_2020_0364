@@ -1,9 +1,11 @@
 import type { FormEvent } from "react";
 import "./LoginForm.css";
 import CommunicationController from "../communication/CommunicationController";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
   function handleLoginClick(e: FormEvent) {
     e.preventDefault();
 
@@ -21,6 +23,8 @@ const LoginForm = () => {
         localStorage.setItem("token", payload.token);
 
         console.log("Login successful and token set!");
+
+        navigate("/chat");
       } else {
         console.log(":(((((((((((((((");
         console.log(response);
