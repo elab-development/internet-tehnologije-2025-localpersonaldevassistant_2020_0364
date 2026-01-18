@@ -12,7 +12,7 @@
     "typeorm": "^0.3.28"
   },
   "scripts": {
-    "start": "npm install && nodemon src/server.ts"
+    "start": "npm install && (docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama && docker exec -d ollama ollama pull qwen2.5:1.5b || ver > nul) && nodemon src/server.ts"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

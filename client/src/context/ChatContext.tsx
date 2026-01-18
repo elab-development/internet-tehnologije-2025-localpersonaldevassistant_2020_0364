@@ -5,6 +5,7 @@ export interface ChatContextType {
   currentSessionId: number | null;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  addMessage: (message: Message) => void;
   isLoading: boolean;
   loadSession: (sessionId: number) => void;
 }

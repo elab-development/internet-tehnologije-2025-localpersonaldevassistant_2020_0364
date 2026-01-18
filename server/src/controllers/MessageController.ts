@@ -4,6 +4,7 @@ import { Message } from "../models/Message";
 import { Session } from "../models/Session";
 import { User } from "../models/User";
 import { SenderType, Mode } from "../models/Enums";
+import { LLMService } from "../services/LLMService";
 
 export class MessageController {
   static async sendMessage(req: Request, res: Response): Promise<void> {
@@ -15,6 +16,11 @@ export class MessageController {
         res.status(400).json({ message: "Message content is required" });
         return;
       }
+
+      for (let index = 0; index < 1000000000; index++) {
+        Math.sqrt(index);
+      }
+      console.log("Artificial delay complete");
 
       const sessionRepo = AppDataSource.getRepository(Session);
       const messageRepo = AppDataSource.getRepository(Message);
@@ -47,6 +53,7 @@ export class MessageController {
         await sessionRepo.save(session);
       }
 
+      // Saving user message
       const message = new Message();
       message.content = content;
       message.senderType = SenderType.USER;
@@ -55,16 +62,22 @@ export class MessageController {
 
       await messageRepo.save(message);
 
+      // Update session's last activity
       session.lastActivityAt = new Date();
       await sessionRepo.save(session);
 
-      res.status(201).json({
-        message: "Message sent",
-        payload: {
-          message: message,
-          sessionId: session.id,
-        },
-      });
+      // Get response from LLM
+      const llmResponse = await LLMService.ask(content);
+
+      const serverResponse = new Message();
+      serverResponse.content = llmResponse;
+      serverResponse.senderType = SenderType.LLM;
+      serverResponse.mode = mode || Mode.GENERATION;
+      serverResponse.session = session;
+
+      await messageRepo.save(serverResponse);
+
+      res.status(201).json(serverResponse);
     } catch (error) {
       console.error("Send message error:", error);
       res.status(500).json({ message: "Internal server error" });

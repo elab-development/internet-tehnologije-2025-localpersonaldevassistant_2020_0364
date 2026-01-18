@@ -4,7 +4,7 @@ import type { Message } from "../types/types";
 import "./InputComponent.css";
 
 const InputComponent = () => {
-  const { currentSessionId, setMessages } = useChat();
+  const { currentSessionId, addMessage } = useChat();
 
   function handleSendButtonClick(e: React.FormEvent) {
     e.preventDefault();
@@ -20,11 +20,13 @@ const InputComponent = () => {
       createdAt: new Date().toISOString(),
     };
 
-    setMessages((prevMessages) => [optimisticMessage, ...prevMessages]);
+    addMessage(optimisticMessage);
     inputFieldEl.value = "";
 
     CommunicationController.sendRequest("POST", "/api/chat", { body: { content, sessionId: currentSessionId } }).then((response) => {
       console.log("Message sent response:", response);
+      // Adding server response message in the chat
+      addMessage(response.payload as Message);
     });
   }
 

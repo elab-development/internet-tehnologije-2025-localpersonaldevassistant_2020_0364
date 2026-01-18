@@ -49,5 +49,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [currentSessionId]);
 
-  return <ChatContext.Provider value={{ currentSessionId, messages, setMessages, isLoading, loadSession }}>{children}</ChatContext.Provider>;
+  const addMessage = (message: Message) => {
+    setMessages((prev) => [message, ...prev]);
+  };
+
+  return <ChatContext.Provider value={{ currentSessionId, messages, setMessages, isLoading, loadSession, addMessage }}>{children}</ChatContext.Provider>;
 };
