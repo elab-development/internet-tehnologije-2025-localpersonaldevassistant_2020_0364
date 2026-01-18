@@ -5,7 +5,9 @@ import { useChat } from "../context/ChatContext";
 import "./ChatPage.css";
 
 const ChatPage = () => {
-  const { messages } = useChat();
+  const { messages, currentSessionId, sessions } = useChat();
+
+  const activeSession = sessions.find((s) => s.id === currentSessionId);
 
   return (
     <div id="chatPage">
@@ -15,7 +17,9 @@ const ChatPage = () => {
       </div>
       <div id="main">
         <div id="chatContainer">
-          <div id="chatHeader">HEADER OF CHAT</div>
+          <div id="chatHeader">
+            <h2>{activeSession?.title || "New Chat"}</h2>
+          </div>
           <Conversation messages={messages} />
         </div>
         <InputComponent />

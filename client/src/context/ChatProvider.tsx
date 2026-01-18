@@ -3,20 +3,34 @@ import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChatContext } from "./ChatContext";
 import CommunicationController from "../communication/CommunicationController";
-import type { Message } from "../types/types";
+import type { Message, Session } from "../types/types";
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const { sessionId } = useParams();
   const currentSessionId = sessionId ? parseInt(sessionId) : null;
 
   const [messages, setMessages] = useState<Message[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
+  const refreshSessions = () => {
+    CommunicationController.sendRequest("GET", "/api/chat/sessions", {}).then((response) => {
+      if (response.ok) {
+        setSessions(response.payload as Session[]);
+      }
+    });
+  };
+
   const loadSession = (id: number) => {
     navigate(`/chat/${id}`);
   };
+
+  useEffect(() => {
+    refreshSessions();
+  }, []);
 
   useEffect(() => {
     if (!currentSessionId || isNaN(currentSessionId)) {
@@ -53,5 +67,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setMessages((prev) => [message, ...prev]);
   };
 
-  return <ChatContext.Provider value={{ currentSessionId, messages, setMessages, isLoading, loadSession, addMessage }}>{children}</ChatContext.Provider>;
+  return (
+    <ChatContext.Provider value={{ currentSessionId, messages, setMessages, isLoading, loadSession, addMessage, sessions, refreshSessions }}>
+      {children}
+    </ChatContext.Provider>
+  );
 };

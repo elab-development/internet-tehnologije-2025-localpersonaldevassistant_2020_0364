@@ -12,9 +12,20 @@
 }
 
 .messageBody {
-  background-color: darkslategray;
   color: white;
   padding: 15px 30px;
   border-radius: 15px;
   max-width: 80%;
+}
+
+.messageBody > p {
+  font-size: 14px;
+}
+
+.messageBody.USER {
+  background-color: #4a90e2;
+}
+
+.messageBody.LLM {
+  background-color: darkslategray;
 }

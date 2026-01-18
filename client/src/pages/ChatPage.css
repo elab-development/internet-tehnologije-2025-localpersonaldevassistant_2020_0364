@@ -27,3 +27,15 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+#chatHeader {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+#chatHeader > h2 {
+  color: white;
+  margin: 0;
+  font-size: 16px;
+}

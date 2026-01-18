@@ -4,7 +4,7 @@ import "./MessageTile.css";
 const MessageTile = (message: Message) => {
   return (
     <div className={`messageRow ${message.senderType}`}>
-      <div className="messageBody">
+      <div className={`messageBody ${message.senderType}`}>
         <p>{message.content}</p>
       </div>
     </div>
