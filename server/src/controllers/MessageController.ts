@@ -5,6 +5,7 @@ import { Session } from "../models/Session";
 import { User } from "../models/User";
 import { SenderType, Mode } from "../models/Enums";
 import { LLMService } from "../services/LLMService";
+import titleSummaryPrompt from "../prompts/titleSummary";
 
 export class MessageController {
   static async sendMessage(req: Request, res: Response): Promise<void> {
@@ -22,6 +23,7 @@ export class MessageController {
       const userRepo = AppDataSource.getRepository(User);
 
       let session: Session | null = null;
+      let isNewSession = false;
 
       if (sessionId) {
         session = await sessionRepo.findOne({
@@ -46,6 +48,7 @@ export class MessageController {
         session.title = content.substring(0, 30) + "...";
         session.user = user;
         await sessionRepo.save(session);
+        isNewSession = true;
       }
 
       // Saving user message
@@ -69,6 +72,15 @@ export class MessageController {
       serverResponse.senderType = SenderType.LLM;
       serverResponse.mode = mode || Mode.GENERATION;
       serverResponse.session = session;
+
+      if (isNewSession) {
+        const titlePrompt = titleSummaryPrompt(content, llmResponse);
+        const generatedTitle = await LLMService.ask(titlePrompt);
+        if (generatedTitle && !generatedTitle.includes("unavailable")) {
+          session.title = generatedTitle.replace(/^"|"$/g, "").trim();
+          await sessionRepo.save(session);
+        }
+      }
 
       await messageRepo.save(serverResponse);
 

@@ -4,13 +4,15 @@ import type { Message } from "../types/types";
 import "./InputComponent.css";
 
 const InputComponent = () => {
-  const { currentSessionId, addMessage } = useChat();
+  const { currentSessionId, addMessage, loadSession, refreshSessions } = useChat();
 
   function handleSendButtonClick(e: React.FormEvent) {
     e.preventDefault();
 
     const inputFieldEl = document.getElementById("inputField") as HTMLInputElement;
     const content = inputFieldEl.value;
+
+    if (!content.trim()) return;
 
     const optimisticMessage: Message = {
       id: Date.now(),
@@ -25,8 +27,15 @@ const InputComponent = () => {
 
     CommunicationController.sendRequest("POST", "/api/chat", { body: { content, sessionId: currentSessionId } }).then((response) => {
       console.log("Message sent response:", response);
-      // Adding server response message in the chat
-      addMessage(response.payload as Message);
+      const serverData = response.payload as Message & { session?: { id: number } };
+
+      addMessage(serverData);
+
+      if (!currentSessionId && serverData.session?.id) {
+        const newId = serverData.session.id;
+        loadSession(newId);
+        refreshSessions();
+      }
     });
   }
 

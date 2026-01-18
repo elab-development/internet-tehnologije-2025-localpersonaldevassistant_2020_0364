@@ -8,7 +8,7 @@ export class LLMService {
         model: Config.LLM_MODEL,
         prompt: prompt,
         stream: false,
-        keep_alive: 0,
+        keep_alive: "5m",
         options: {
           temperature: 0.7,
           num_predict: 500,
