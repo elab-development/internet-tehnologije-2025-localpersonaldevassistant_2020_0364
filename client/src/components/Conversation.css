@@ -1,7 +1,42 @@
 #chatContent {
   display: flex;
   flex-direction: column-reverse;
-  overflow-y: scroll;
+  overflow-y: auto;
   gap: 10px;
   padding: 10px;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+#chatContent::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#chatContent::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent;
+}
+
+#chatContent::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+#chatContent::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+#chatContent::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+#chatContent::-webkit-scrollbar-corner {
+  background: transparent;
 }
