@@ -2,16 +2,16 @@ import axios from "axios";
 import { Config } from "../config/config";
 
 export class LLMService {
-  // Use the specific port and model you exposed in Docker
   static async ask(prompt: string): Promise<string> {
     try {
       const response = await axios.post(Config.LLM_API_URL, {
         model: Config.LLM_MODEL,
         prompt: prompt,
-        stream: false, // Wait for the full response before returning
+        stream: false,
+        keep_alive: 0,
         options: {
           temperature: 0.7,
-          num_predict: 500, // Prevents the model from running too long on limited RAM
+          num_predict: 500,
         },
       });
 

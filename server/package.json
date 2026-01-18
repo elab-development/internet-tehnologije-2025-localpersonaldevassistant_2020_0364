@@ -12,7 +12,7 @@
     "typeorm": "^0.3.28"
   },
   "scripts": {
-    "start": "npm install && (docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama && docker exec -d ollama ollama pull qwen2.5:1.5b || ver > nul) && nodemon src/server.ts"
+    "start": "npm install && dotenv -- cmd /c \"(docker start ollama >nul 2>&1 || docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama) && echo Downloading %LLM_MODEL%... && docker exec ollama ollama pull %LLM_MODEL% && nodemon src/server.ts\""
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -20,6 +20,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.2",
+    "dotenv-cli": "^11.0.0",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

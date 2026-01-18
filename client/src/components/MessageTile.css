@@ -1,0 +1,20 @@
+.messageRow {
+  width: 100%;
+  display: flex;
+}
+
+.messageRow.USER {
+  justify-content: flex-end;
+}
+
+.messageRow.LLM {
+  justify-content: flex-start;
+}
+
+.messageBody {
+  background-color: darkslategray;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 15px;
+  max-width: 80%;
+}

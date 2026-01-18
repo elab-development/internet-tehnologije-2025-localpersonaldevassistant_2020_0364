@@ -52,6 +52,13 @@ class CommunicationController {
       };
     } catch (error: unknown) {
       if (isAxiosError(error)) {
+        if (error.response?.status === 401 && api !== "/api/login") {
+          console.warn("Session expired or unauthorized. Redirecting to login...");
+          localStorage.removeItem("token");
+          window.location.href = "/";
+          return { ok: false, status: 401, payload: {} };
+        }
+
         return {
           ok: false,
           status: error.response?.status || 500,

@@ -1,4 +1,6 @@
 import type { Message } from "../types/types";
+import MessageTile from "./MessageTile";
+import "./Conversation.css";
 
 type Props = {
   messages: Message[];
@@ -8,7 +10,7 @@ const Conversation = (props: Props) => {
   return (
     <div id="chatContent">
       {props.messages.map((message) => (
-        <div key={message.id}>{message.content}</div>
+        <MessageTile key={message.id} {...message} />
       ))}
     </div>
   );

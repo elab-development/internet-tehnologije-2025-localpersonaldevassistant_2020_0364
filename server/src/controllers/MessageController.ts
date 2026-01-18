@@ -17,11 +17,6 @@ export class MessageController {
         return;
       }
 
-      for (let index = 0; index < 1000000000; index++) {
-        Math.sqrt(index);
-      }
-      console.log("Artificial delay complete");
-
       const sessionRepo = AppDataSource.getRepository(Session);
       const messageRepo = AppDataSource.getRepository(Message);
       const userRepo = AppDataSource.getRepository(User);

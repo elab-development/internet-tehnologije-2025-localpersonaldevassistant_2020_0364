@@ -31,10 +31,12 @@ const InputComponent = () => {
   }
 
   return (
-    <form id="inputContainer" onSubmit={handleSendButtonClick}>
-      <input type="text" name="" id="inputField" />
-      <button type="submit">SEND</button>
-    </form>
+    <div id="inputFormWrapper">
+      <form id="inputForm" onSubmit={handleSendButtonClick}>
+        <input type="text" name="" id="inputField" />
+        <button type="submit">SEND</button>
+      </form>
+    </div>
   );
 };
 
