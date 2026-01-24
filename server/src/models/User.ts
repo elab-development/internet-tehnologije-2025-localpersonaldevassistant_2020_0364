@@ -3,8 +3,8 @@ import { Session } from "./Session";
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string;
+  @PrimaryGeneratedColumn("increment")
+  id!: number;
 
   @Column({ unique: true })
   username!: string;
