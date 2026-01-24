@@ -19,6 +19,6 @@ export class Session {
   @ManyToOne(() => User, (user) => user.sessions)
   user!: User;
 
-  // @OneToMany(() => Message, (message) => message.session)
-  // messages!: Message[];
+  @OneToMany(() => Message, (message) => message.session)
+  messages!: Message[];
 }
