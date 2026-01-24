@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToOne } from "typeorm";
 import { Session } from "./Session";
 import { SenderType, Mode } from "./Enums";
+import { Feedback } from "./Feedback";
 
 @Entity()
 export class Message {
@@ -29,4 +30,7 @@ export class Message {
 
   @ManyToOne(() => Session, (session) => session.messages)
   session!: Session;
+
+  @OneToOne(() => Feedback, (feedback) => feedback.message)
+  feedback!: Feedback;
 }

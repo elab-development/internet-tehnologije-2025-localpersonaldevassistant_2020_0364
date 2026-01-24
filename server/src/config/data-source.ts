@@ -5,6 +5,7 @@ import { User } from "../models/User";
 import { Message } from "../models/Message";
 import { Session } from "../models/Session";
 import { Workspace } from "../models/Workspace";
+import { Feedback } from "../models/Feedback";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -17,7 +18,7 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: false,
 
-  entities: [User, Session, Message, Workspace],
+  entities: [User, Session, Message, Workspace, Feedback],
 
   migrations: ["src/migrations/*.ts"],
   subscribers: [],
