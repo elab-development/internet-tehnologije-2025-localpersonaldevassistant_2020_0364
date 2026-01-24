@@ -9,7 +9,8 @@
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.15.3",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.28"
+    "typeorm": "^0.3.28",
+    "typeorm-ts-node-commonjs": "^0.3.20"
   },
   "scripts": {
     "start": "npm install && dotenv -- cmd /c \"(docker start ollama >nul 2>&1 || docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama) && echo Downloading %LLM_MODEL%... && docker exec ollama ollama pull %LLM_MODEL% && nodemon src/server.ts\""

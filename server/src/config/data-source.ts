@@ -13,10 +13,10 @@ export const AppDataSource = new DataSource({
   password: Config.DB_PASS,
   database: Config.DB_NAME,
 
-  synchronize: true,
+  synchronize: false,
   logging: false,
 
-  entities: [User, Message, Session],
+  entities: [User],
 
   migrations: ["src/migrations/*.ts"],
   subscribers: [],
