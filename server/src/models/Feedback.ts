@@ -7,13 +7,10 @@ export class Feedback {
   id!: number;
 
   @Column()
-  isPositive!: boolean; // true = Like, false = Dislike
+  isPositive!: boolean;
 
   @Column({ type: "text", nullable: true })
-  comment!: string; // Only filled if isPositive is false
-
-  @CreateDateColumn()
-  createdAt!: Date;
+  comment!: string;
 
   @OneToOne(() => Message, (message) => message.feedback, { onDelete: "CASCADE" })
   @JoinColumn()
