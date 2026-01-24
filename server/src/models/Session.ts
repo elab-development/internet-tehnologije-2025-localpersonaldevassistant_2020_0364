@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from "typeorm";
 import { User } from "./User";
 import { Message } from "./Message";
+import { Workspace } from "./Workspace";
 
 @Entity()
 export class Session {
@@ -21,4 +22,7 @@ export class Session {
 
   @OneToMany(() => Message, (message) => message.session)
   messages!: Message[];
+
+  @ManyToOne(() => Workspace, (workspace) => workspace.sessions, { nullable: true, onDelete: "SET NULL" })
+  workspace!: Workspace | null;
 }
