@@ -4,6 +4,7 @@ import { User } from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Config } from "../config/config";
+import { BlacklistedToken } from "../models/BlacklistedToken";
 
 export class AuthController {
   static async login(req: Request, res: Response): Promise<void> {
@@ -61,6 +62,32 @@ export class AuthController {
       res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
       console.error("Registration error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  static async logout(req: Request, res: Response): Promise<void> {
+    try {
+      const token = res.locals.token;
+      const decoded: any = jwt.decode(token);
+
+      if (!decoded || !decoded.exp) {
+        res.status(400).json({ message: "Invalid token data" });
+        return;
+      }
+
+      const blacklistRepo = AppDataSource.getRepository(BlacklistedToken);
+      const blacklistedToken = new BlacklistedToken();
+      blacklistedToken.token = token;
+
+      // Convert Unix timestamp (seconds) to JS Date (milliseconds)
+      blacklistedToken.expiresAt = new Date(decoded.exp * 1000);
+
+      await blacklistRepo.save(blacklistedToken);
+
+      res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Logout error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }

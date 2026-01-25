@@ -1,12 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { Config } from "../config/config";
+import { AppDataSource } from "../config/data-source";
+import { BlacklistedToken } from "../models/BlacklistedToken";
 
-export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
+export const checkJwt = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers["authorization"]?.split(" ")[1];
 
   if (!token) {
     res.status(401).json({ message: "No token provided" });
+    return;
+  }
+
+  const blacklistRepo = AppDataSource.getRepository(BlacklistedToken);
+  const isBlacklisted = await blacklistRepo.findOneBy({ token });
+
+  if (isBlacklisted) {
+    res.status(401).json({ message: "Token invalidated (Logged out)" });
     return;
   }
 
