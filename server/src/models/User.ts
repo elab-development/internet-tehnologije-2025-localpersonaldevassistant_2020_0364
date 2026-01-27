@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { Session } from "./Session";
 import { Workspace } from "./Workspace";
+import { UserRole } from "./Enums";
 
 @Entity()
 export class User {
@@ -12,6 +13,13 @@ export class User {
 
   @Column()
   password!: string;
+
+  @Column({
+    type: "enum",
+    enum: UserRole,
+    default: UserRole.REGULAR,
+  })
+  role!: UserRole;
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -8,3 +8,9 @@ export enum Mode {
   GENERATION = "GENERATION",
   DEBUG = "DEBUG",
 }
+
+export enum UserRole {
+  ADMIN = "ADMIN",
+  REGULAR = "REGULAR",
+  GUEST = "GUEST",
+}

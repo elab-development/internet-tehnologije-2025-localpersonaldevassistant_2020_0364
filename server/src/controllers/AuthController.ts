@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Config } from "../config/config";
 import { BlacklistedToken } from "../models/BlacklistedToken";
+import { UserRole } from "../models/Enums";
 
 export class AuthController {
   static async login(req: Request, res: Response): Promise<void> {
@@ -25,12 +26,35 @@ export class AuthController {
         return;
       }
 
-      const token = jwt.sign({ userId: user.id, username: user.username }, Config.JWT_SECRET, { expiresIn: "1 hour" });
+      const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, Config.JWT_SECRET, { expiresIn: "1 hour" });
 
       res.json({ message: "Login successful", token });
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  static async loginAsGuest(req: Request, res: Response): Promise<void> {
+    try {
+      const userRepo = AppDataSource.getRepository(User);
+
+      const guestUsername = `guest_${Date.now()}`;
+      const dummyPassword = await bcrypt.hash("guest_secret", 10);
+
+      const guestUser = new User();
+      guestUser.username = guestUsername;
+      guestUser.password = dummyPassword;
+      guestUser.role = UserRole.GUEST;
+
+      await userRepo.save(guestUser);
+
+      const token = jwt.sign({ userId: guestUser.id, username: guestUser.username, role: UserRole.GUEST }, Config.JWT_SECRET, { expiresIn: "24h" });
+
+      res.json({ message: "Guest session started", token, user: { username: guestUsername, role: "GUEST" } });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
     }
   }
 
