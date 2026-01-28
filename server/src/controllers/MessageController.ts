@@ -147,4 +147,42 @@ export class MessageController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  static async updateSessionTitle(req: Request, res: Response): Promise<void> {
+    try {
+      const { sessionId } = req.params;
+      const { title } = req.body;
+      const { userId } = res.locals.jwtPayload;
+
+      if (!title || title.trim() === "") {
+        res.status(400).json({ message: "Title is required" });
+        return;
+      }
+
+      const sessionRepo = AppDataSource.getRepository(Session);
+
+      const session = await sessionRepo.findOne({
+        where: { id: parseInt(sessionId) },
+        relations: ["user"],
+      });
+
+      if (!session) {
+        res.status(404).json({ message: "Session not found" });
+        return;
+      }
+
+      if (session.user.id !== userId) {
+        res.status(403).json({ message: "Unauthorized access to this session" });
+        return;
+      }
+
+      session.title = title;
+      await sessionRepo.save(session);
+
+      res.status(200).json({ message: "Session updated", session });
+    } catch (error) {
+      console.error("Update session error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }

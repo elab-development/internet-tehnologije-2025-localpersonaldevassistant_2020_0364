@@ -12,5 +12,6 @@ router.use(checkRole([UserRole.GUEST, UserRole.REGULAR, UserRole.ADMIN]));
 router.post("/", MessageController.sendMessage);
 router.get("/sessions", MessageController.getAllSessions);
 router.get("/:sessionId/messages", MessageController.getMessagesBySession);
+router.put("/sessions/:sessionId", MessageController.updateSessionTitle);
 
 export default router;
