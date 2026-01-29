@@ -1,6 +1,6 @@
 import CommunicationController from "../communication/CommunicationController";
 import { useChat } from "../context/ChatContext";
-import type { Message } from "../types/types";
+import type { Message, Mode } from "../types/types";
 import "./InputComponent.css";
 
 const InputComponent = () => {
@@ -18,7 +18,7 @@ const InputComponent = () => {
       id: Date.now(),
       content,
       senderType: "USER",
-      mode: "GENERATION",
+      mode: (document.getElementById("modeSelect") as HTMLSelectElement).value as Mode,
       createdAt: new Date().toISOString(),
     };
 
@@ -43,6 +43,11 @@ const InputComponent = () => {
     <div id="inputFormWrapper">
       <form id="inputForm" onSubmit={handleSendButtonClick}>
         <input type="text" name="" id="inputField" />
+        <select id="modeSelect">
+          <option value="GENERATION">Generation</option>
+          <option value="ANALYSIS">Analysis</option>
+          <option value="DEBUG">Debug</option>
+        </select>
         <button type="submit">SEND</button>
       </form>
     </div>

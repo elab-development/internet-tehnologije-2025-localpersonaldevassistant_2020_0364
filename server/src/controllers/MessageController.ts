@@ -6,6 +6,9 @@ import { User } from "../models/User";
 import { SenderType, Mode } from "../models/Enums";
 import { LLMService } from "../services/LLMService";
 import titleSummaryPrompt from "../prompts/titleSummary";
+import analysisPrompt from "../prompts/analysisPrompt";
+import debugPrompt from "../prompts/debugPrompt";
+import generationPrompt from "../prompts/generationPrompt";
 
 export class MessageController {
   static async sendMessage(req: Request, res: Response): Promise<void> {
@@ -64,8 +67,23 @@ export class MessageController {
       session.lastActivityAt = new Date();
       await sessionRepo.save(session);
 
+      let finalPrompt = "";
+
+      switch (mode) {
+        case Mode.ANALYSIS:
+          finalPrompt = analysisPrompt(content);
+          break;
+        case Mode.DEBUG:
+          finalPrompt = debugPrompt(content);
+          break;
+        case Mode.GENERATION:
+        default:
+          finalPrompt = generationPrompt(content);
+          break;
+      }
+
       // Get response from LLM
-      const llmResponse = await LLMService.ask(content);
+      const llmResponse = await LLMService.ask(finalPrompt);
 
       const serverResponse = new Message();
       serverResponse.content = llmResponse;
