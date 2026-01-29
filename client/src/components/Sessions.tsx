@@ -7,7 +7,7 @@ const Sessions = () => {
 
   return (
     <div id="sessionsContainer">
-      <h3>Sessions</h3>
+      <h3>DEV ASSISTANT</h3>
       {sessions.map((session) => (
         <SessionTile key={session.id} id={session.id} title={session.title} />
       ))}

@@ -1,6 +1,7 @@
 .messageRow {
   width: 100%;
   display: flex;
+  margin-bottom: 16px;
 }
 
 .messageRow.USER {
@@ -12,20 +13,27 @@
 }
 
 .messageBody {
-  color: white;
-  padding: 10px 20px;
-  border-radius: 15px;
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
   max-width: 80%;
-}
-
-.messageBody > p {
-  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: var(--shadow-sm);
+  position: relative;
 }
 
 .messageBody.USER {
-  background-color: #4a90e2;
+  background-color: var(--msg-user);
+  color: white;
+  border-bottom-right-radius: 2px;
 }
 
 .messageBody.LLM {
-  background-color: darkslategray;
+  background-color: var(--msg-llm);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: 2px;
+}
+
+.messageBody p {
+  font-size: 0.95rem;
 }

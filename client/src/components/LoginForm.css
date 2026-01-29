@@ -1,34 +1,51 @@
 #loginForm {
-  height: 100px;
   width: 350px;
   display: flex;
   flex-direction: column;
-  align-items: end;
-  gap: 7px;
+  gap: 12px;
+  background-color: var(--bg-card);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
 }
 
 #loginForm > input {
-  border: 1px solid white;
-  padding: 5px;
-  border-radius: 10px;
-  width: 100%;
-  box-sizing: border-box;
+  background-color: var(--bg-app);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
 }
 
 #loginForm > input:focus {
-  border: 1px solid white;
+  border-color: var(--primary);
   outline: none;
 }
 
 #logInButton {
-  background-color: #ff8427;
-  padding: 5px;
-  font-weight: bolder;
-  font-size: 15px;
-  border-radius: 10px;
-  width: 100%;
+  background-color: var(--primary);
+  color: white;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  margin-top: 10px;
+  transition: background-color 0.2s;
 }
 
 #logInButton:hover {
-  cursor: pointer;
+  background-color: var(--primary-hover);
+}
+
+#loginForm a {
+  color: var(--primary);
+  font-size: 0.9rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+#loginForm a:hover {
+  text-decoration: underline;
 }

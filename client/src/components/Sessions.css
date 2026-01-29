@@ -1,5 +1,31 @@
 #sessionsContainer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+#sessionsContainer h3 {
+  color: var(--text-main);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 12px;
+}
+
+.sessionContainer {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+}
+
+.sessionContainer:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-main);
 }
