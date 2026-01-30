@@ -27,6 +27,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     navigate(`/chat/${id}`);
   };
 
+  const startNewSession = () => {
+    setMessages([]);
+    navigate("/chat");
+  };
+
   useEffect(() => {
     refreshSessions();
   }, []);
@@ -37,26 +42,34 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
 
     let isMounted = true;
+
     const timer = setTimeout(() => {
-      setIsLoading(true);
-      setMessages([]);
+      if (isMounted) {
+        setIsLoading(true);
+        setMessages([]);
+      }
     }, 0);
 
     CommunicationController.sendRequest("GET", `/api/chat/${currentSessionId}/messages`, {})
       .then((res) => {
         if (isMounted && res.ok) {
           const data = res.payload as Message[];
-          setMessages(Array.isArray(data) ? data : []);
+          setTimeout(() => {
+            if (isMounted) {
+              setMessages(Array.isArray(data) ? data : []);
+              setIsLoading(false);
+            }
+          }, 0);
         }
       })
-      .catch((err) => console.error(err))
-      .finally(() => {
+      .catch((err) => {
+        console.error(err);
         if (isMounted) setIsLoading(false);
       });
 
     return () => {
       isMounted = false;
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
     };
   }, [currentSessionId]);
 
@@ -117,6 +130,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         sessions,
         refreshSessions,
         sendMessageStream,
+        startNewSession,
       }}
     >
       {children}

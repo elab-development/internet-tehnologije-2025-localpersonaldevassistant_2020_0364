@@ -11,6 +11,7 @@ export interface ChatContextType {
   loadSession: (sessionId: number) => void;
   refreshSessions: () => void;
   sendMessageStream: (content: string, mode: Mode) => Promise<void>;
+  startNewSession: () => void;
 }
 
 export const ChatContext = createContext<ChatContextType | undefined>(undefined);
