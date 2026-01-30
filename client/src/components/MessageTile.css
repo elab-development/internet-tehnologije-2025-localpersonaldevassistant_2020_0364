@@ -19,6 +19,9 @@
   line-height: 1.5;
   box-shadow: var(--shadow-sm);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .messageBody.USER {
@@ -36,4 +39,142 @@
 
 .messageBody p {
   font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+.feedbackContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.feedbackActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.feedbackActions > .feedbackQuestion {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.feedbackBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.feedbackBtn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  opacity: 1;
+}
+
+.feedbackIcon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1px;
+  fill: none;
+  stroke: currentColor;
+  transition: all 0.2s;
+}
+
+.feedbackBtn.active {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.feedbackBtn.active.like {
+  color: var(--accent-success);
+}
+
+.feedbackBtn.active.like .feedbackIcon {
+  fill: var(--accent-success);
+}
+
+.feedbackBtn.active.dislike {
+  color: var(--accent-danger);
+}
+
+.feedbackBtn.active.dislike .feedbackIcon {
+  fill: var(--accent-danger);
+}
+
+.feedbackInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.2s ease-out;
+  width: 100%;
+  height: 34px;
+}
+
+.feedbackInput {
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid transparent;
+  color: var(--text-main);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.feedbackInput:focus {
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: var(--primary);
+}
+
+.feedbackInput::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.feedbackSubmitBtn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
+}
+
+.feedbackSubmitBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+.feedbackSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

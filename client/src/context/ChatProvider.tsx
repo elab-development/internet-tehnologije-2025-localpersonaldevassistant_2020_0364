@@ -94,6 +94,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       senderType: "LLM",
       mode,
       createdAt: new Date().toISOString(),
+      isStreaming: true,
     };
     addMessage(llmMsg);
 
@@ -105,7 +106,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       },
       (finalData: { messageId?: number; sessionId?: number }) => {
         if (finalData.messageId) {
-          setMessages((prev) => prev.map((msg) => (msg.id === tempLlmId ? { ...msg, id: finalData.messageId! } : msg)));
+          setMessages((prev) => prev.map((msg) => (msg.id === tempLlmId ? { ...msg, id: finalData.messageId!, isStreaming: false } : msg)));
         }
 
         if (finalData.sessionId) {

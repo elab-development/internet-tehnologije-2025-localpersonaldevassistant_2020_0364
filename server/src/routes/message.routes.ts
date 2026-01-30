@@ -14,4 +14,6 @@ router.get("/sessions", MessageController.getAllSessions);
 router.get("/:sessionId/messages", MessageController.getMessagesBySession);
 router.put("/sessions/:sessionId", MessageController.updateSessionTitle);
 
+router.post("/:messageId/feedback", MessageController.addFeedback);
+
 export default router;

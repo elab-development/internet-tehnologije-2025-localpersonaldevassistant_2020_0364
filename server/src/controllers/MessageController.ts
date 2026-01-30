@@ -3,6 +3,7 @@ import { AppDataSource } from "../config/data-source";
 import { Message } from "../models/Message";
 import { Session } from "../models/Session";
 import { User } from "../models/User";
+import { Feedback } from "../models/Feedback"; // [NEW] Import Feedback
 import { SenderType, Mode } from "../models/Enums";
 import { LLMService } from "../services/LLMService";
 import titleSummaryPrompt from "../prompts/titleSummary";
@@ -159,6 +160,7 @@ export class MessageController {
 
       const messages = await messageRepo.find({
         where: { session: { id: session.id } },
+        relations: ["feedback"],
         order: { createdAt: "DESC" },
       });
 
@@ -202,6 +204,48 @@ export class MessageController {
       res.status(200).json({ message: "Session updated", session });
     } catch (error) {
       console.error("Update session error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  static async addFeedback(req: Request, res: Response): Promise<void> {
+    try {
+      const { messageId } = req.params;
+      const { isPositive, comment } = req.body;
+      const { userId } = res.locals.jwtPayload;
+
+      const messageRepo = AppDataSource.getRepository(Message);
+      const feedbackRepo = AppDataSource.getRepository(Feedback);
+
+      const message = await messageRepo.findOne({
+        where: { id: parseInt(messageId) },
+        relations: ["session", "session.user", "feedback"],
+      });
+
+      if (!message) {
+        res.status(404).json({ message: "Message not found" });
+        return;
+      }
+
+      if (message.session.user.id !== userId) {
+        res.status(403).json({ message: "Unauthorized" });
+        return;
+      }
+
+      let feedback = message.feedback;
+      if (!feedback) {
+        feedback = new Feedback();
+        feedback.message = message;
+      }
+
+      feedback.isPositive = isPositive;
+      feedback.comment = comment || "";
+
+      await feedbackRepo.save(feedback);
+
+      res.status(200).json({ message: "Feedback submitted", feedback });
+    } catch (error) {
+      console.error("Feedback error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
