@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { Session } from "./Session";
-import { Workspace } from "./Workspace";
 import { UserRole } from "./Enums";
 
 @Entity()
@@ -32,7 +31,4 @@ export class User {
 
   @OneToMany(() => Session, (session) => session.user)
   sessions!: Session[];
-
-  @OneToMany(() => Workspace, (workspace) => workspace.user)
-  workspaces!: Workspace[];
 }
