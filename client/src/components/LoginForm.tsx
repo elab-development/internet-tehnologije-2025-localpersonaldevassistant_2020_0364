@@ -1,10 +1,11 @@
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import "./LoginForm.css";
 import CommunicationController from "../communication/CommunicationController";
 import { Link, useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
 
   function handleLoginClick(e: FormEvent) {
     e.preventDefault();
@@ -27,6 +28,8 @@ const LoginForm = () => {
         navigate("/chat");
       } else {
         console.log(response);
+        const payload = response.payload as { message: string };
+        setError(payload.message || "Invalid credentials.");
       }
     });
   }
@@ -49,10 +52,13 @@ const LoginForm = () => {
     <form id="loginForm" onSubmit={handleLoginClick}>
       <input id="usernameInputField" type="text" name="usernameInputField" placeholder="Username" />
       <input id="passwordInputField" type="password" name="passwordInputField" placeholder="Password" />
+      {error && <div className="authError">{error}</div>}
       <button id="logInButton" type="submit">
         LOG IN
       </button>
-      <a href="#" onClick={handleGuestLogin}>Continue as guest</a>
+      <a href="#" onClick={handleGuestLogin}>
+        Continue as guest
+      </a>
       <Link to="/register">Create new account</Link>
     </form>
   );
