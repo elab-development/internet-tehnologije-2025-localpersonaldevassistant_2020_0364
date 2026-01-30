@@ -80,10 +80,13 @@ export class AuthController {
       const newUser = new User();
       newUser.username = username;
       newUser.password = hashedPassword;
+      newUser.role = UserRole.REGULAR;
 
       await userRepo.save(newUser);
 
-      res.status(201).json({ message: "User registered successfully" });
+      const token = jwt.sign({ userId: newUser.id, username: newUser.username, role: newUser.role }, Config.JWT_SECRET, { expiresIn: "1 hour" });
+
+      res.status(201).json({ message: "User registered successfully", token });
     } catch (error) {
       console.error("Registration error:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -92,8 +95,10 @@ export class AuthController {
 
   static async logout(req: Request, res: Response): Promise<void> {
     try {
-      const token = res.locals.token;
-      const decoded: any = jwt.decode(token);
+      const authHeader = req.headers["authorization"];
+      const token = authHeader && authHeader.split(" ")[1];
+
+      const decoded: any = jwt.decode(token as string);
 
       if (!decoded || !decoded.exp) {
         res.status(400).json({ message: "Invalid token data" });
@@ -102,7 +107,7 @@ export class AuthController {
 
       const blacklistRepo = AppDataSource.getRepository(BlacklistedToken);
       const blacklistedToken = new BlacklistedToken();
-      blacklistedToken.token = token;
+      blacklistedToken.token = token as string;
 
       // Convert Unix timestamp (seconds) to JS Date (milliseconds)
       blacklistedToken.expiresAt = new Date(decoded.exp * 1000);

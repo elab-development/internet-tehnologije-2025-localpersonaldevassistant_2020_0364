@@ -1,9 +1,11 @@
 import type { FormEvent } from "react";
 import "./RegisterForm.css";
 import CommunicationController from "../communication/CommunicationController";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
+
   function handleRegisterClick(e: FormEvent) {
     e.preventDefault();
 
@@ -17,7 +19,15 @@ const RegisterForm = () => {
       body: { username, password },
     }).then((response) => {
       if (response.ok) {
-        console.log("Registration successful!");
+        const payload = response.payload as { token: string };
+        
+        if (payload.token) {
+            localStorage.setItem("token", payload.token);
+            navigate("/chat");
+        } else {
+            alert("Registration successful! Please log in.");
+            navigate("/login");
+        }
       } else {
         console.error("Registration failed:", response);
       }

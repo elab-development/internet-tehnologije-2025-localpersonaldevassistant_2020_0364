@@ -54,9 +54,16 @@
   background-color: var(--primary);
   color: white;
   border-radius: var(--radius-sm);
-  padding: 0 20px;
   font-weight: 600;
   transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+#inputForm > button:hover {
+  cursor: pointer;
 }
 
 #inputForm > button:hover {

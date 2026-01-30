@@ -26,8 +26,21 @@ const LoginForm = () => {
 
         navigate("/chat");
       } else {
-        console.log(":(((((((((((((((");
         console.log(response);
+      }
+    });
+  }
+
+  function handleGuestLogin(e: React.MouseEvent) {
+    e.preventDefault();
+
+    CommunicationController.sendRequest("POST", "/api/guest", {}).then((response) => {
+      if (response.ok) {
+        const payload = response.payload as { token: string };
+        localStorage.setItem("token", payload.token);
+        navigate("/chat");
+      } else {
+        alert("Failed to start guest session.");
       }
     });
   }
@@ -39,7 +52,7 @@ const LoginForm = () => {
       <button id="logInButton" type="submit">
         LOG IN
       </button>
-      <a href="">Continue as guest</a>
+      <a href="#" onClick={handleGuestLogin}>Continue as guest</a>
       <Link to="/register">Create new account</Link>
     </form>
   );

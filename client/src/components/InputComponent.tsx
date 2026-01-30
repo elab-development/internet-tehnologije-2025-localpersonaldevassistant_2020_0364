@@ -1,6 +1,7 @@
 import { useChat } from "../context/ChatContext";
 import type { Mode } from "../types/types";
 import "./InputComponent.css";
+import sendIcon from "../assets/send-icon.svg";
 
 const InputComponent = () => {
   const { sendMessageStream } = useChat();
@@ -30,7 +31,7 @@ const InputComponent = () => {
           <option value="ANALYSIS">Analysis</option>
           <option value="DEBUG">Debug</option>
         </select>
-        <button type="submit">SEND</button>
+        <button type="submit"><img src={sendIcon} width="25" height="25" /></button>
       </form>
     </div>
   );
