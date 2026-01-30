@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChatContext } from "./ChatContext";
 import CommunicationController from "../communication/CommunicationController";
-import type { Message, Session } from "../types/types";
+import type { Message, Session, Mode } from "../types/types";
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const { sessionId } = useParams();
@@ -11,7 +11,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
-
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -38,7 +37,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
 
     let isMounted = true;
-
     const timer = setTimeout(() => {
       setIsLoading(true);
       setMessages([]);
@@ -49,7 +47,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         if (isMounted && res.ok) {
           const data = res.payload as Message[];
           setMessages(Array.isArray(data) ? data : []);
-          console.log("Loaded messages for session", currentSessionId, data);
         }
       })
       .catch((err) => console.error(err))
@@ -67,8 +64,61 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setMessages((prev) => [message, ...prev]);
   };
 
+  const sendMessageStream = async (content: string, mode: Mode) => {
+    const userMsg: Message = {
+      id: Date.now(),
+      content,
+      senderType: "USER",
+      mode,
+      createdAt: new Date().toISOString(),
+    };
+    addMessage(userMsg);
+
+    const tempLlmId = Date.now() + 1;
+    const llmMsg: Message = {
+      id: tempLlmId,
+      content: "",
+      senderType: "LLM",
+      mode,
+      createdAt: new Date().toISOString(),
+    };
+    addMessage(llmMsg);
+
+    await CommunicationController.streamRequest(
+      "/api/chat",
+      { content, sessionId: currentSessionId, mode },
+      (chunk) => {
+        setMessages((prev) => prev.map((msg) => (msg.id === tempLlmId ? { ...msg, content: msg.content + chunk } : msg)));
+      },
+      (finalData: { messageId?: number; sessionId?: number }) => {
+        if (finalData.messageId) {
+          setMessages((prev) => prev.map((msg) => (msg.id === tempLlmId ? { ...msg, id: finalData.messageId! } : msg)));
+        }
+
+        if (finalData.sessionId) {
+          refreshSessions();
+          if (!currentSessionId) {
+            loadSession(finalData.sessionId);
+          }
+        }
+      },
+    );
+  };
+
   return (
-    <ChatContext.Provider value={{ currentSessionId, messages, setMessages, isLoading, loadSession, addMessage, sessions, refreshSessions }}>
+    <ChatContext.Provider
+      value={{
+        currentSessionId,
+        messages,
+        setMessages,
+        isLoading,
+        loadSession,
+        addMessage,
+        sessions,
+        refreshSessions,
+        sendMessageStream,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );

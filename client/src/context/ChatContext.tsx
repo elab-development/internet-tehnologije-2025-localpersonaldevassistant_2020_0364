@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Message, Session } from "../types/types";
+import type { Message, Session, Mode } from "../types/types";
 
 export interface ChatContextType {
   currentSessionId: number | null;
@@ -10,6 +10,7 @@ export interface ChatContextType {
   isLoading: boolean;
   loadSession: (sessionId: number) => void;
   refreshSessions: () => void;
+  sendMessageStream: (content: string, mode: Mode) => Promise<void>;
 }
 
 export const ChatContext = createContext<ChatContextType | undefined>(undefined);

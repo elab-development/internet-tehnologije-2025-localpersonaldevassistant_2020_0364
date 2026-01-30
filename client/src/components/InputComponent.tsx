@@ -1,10 +1,9 @@
-import CommunicationController from "../communication/CommunicationController";
 import { useChat } from "../context/ChatContext";
-import type { Message, Mode } from "../types/types";
+import type { Mode } from "../types/types";
 import "./InputComponent.css";
 
 const InputComponent = () => {
-  const { currentSessionId, addMessage, loadSession, refreshSessions } = useChat();
+  const { sendMessageStream } = useChat();
 
   function handleSendButtonClick(e: React.FormEvent) {
     e.preventDefault();
@@ -14,35 +13,18 @@ const InputComponent = () => {
 
     if (!content.trim()) return;
 
-    const optimisticMessage: Message = {
-      id: Date.now(),
-      content,
-      senderType: "USER",
-      mode: (document.getElementById("modeSelect") as HTMLSelectElement).value as Mode,
-      createdAt: new Date().toISOString(),
-    };
+    const modeSelectEl = document.getElementById("modeSelect") as HTMLSelectElement;
+    const mode = (modeSelectEl.value as Mode) || "GENERATION";
 
-    addMessage(optimisticMessage);
+    sendMessageStream(content, mode);
+
     inputFieldEl.value = "";
-
-    CommunicationController.sendRequest("POST", "/api/chat", { body: { content, sessionId: currentSessionId } }).then((response) => {
-      console.log("Message sent response:", response);
-      const serverData = response.payload as Message & { session?: { id: number } };
-
-      addMessage(serverData);
-
-      if (!currentSessionId && serverData.session?.id) {
-        const newId = serverData.session.id;
-        loadSession(newId);
-        refreshSessions();
-      }
-    });
   }
 
   return (
     <div id="inputFormWrapper">
       <form id="inputForm" onSubmit={handleSendButtonClick}>
-        <input type="text" name="" id="inputField" />
+        <input type="text" name="" id="inputField" placeholder="Ask something..." autoComplete="off" />
         <select id="modeSelect">
           <option value="GENERATION">Generation</option>
           <option value="ANALYSIS">Analysis</option>

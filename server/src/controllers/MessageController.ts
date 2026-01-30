@@ -54,21 +54,17 @@ export class MessageController {
         isNewSession = true;
       }
 
-      // Saving user message
       const message = new Message();
       message.content = content;
       message.senderType = SenderType.USER;
       message.mode = mode || Mode.GENERATION;
       message.session = session;
-
       await messageRepo.save(message);
 
-      // Update session's last activity
       session.lastActivityAt = new Date();
       await sessionRepo.save(session);
 
       let finalPrompt = "";
-
       switch (mode) {
         case Mode.ANALYSIS:
           finalPrompt = analysisPrompt(content);
@@ -82,17 +78,20 @@ export class MessageController {
           break;
       }
 
-      // Get response from LLM
-      const llmResponse = await LLMService.ask(finalPrompt);
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("Cache-Control", "no-cache");
 
-      const serverResponse = new Message();
-      serverResponse.content = llmResponse;
-      serverResponse.senderType = SenderType.LLM;
-      serverResponse.mode = mode || Mode.GENERATION;
-      serverResponse.session = session;
+      const fullLlmResponse = await LLMService.streamAsk(finalPrompt, res);
+
+      const serverMessage = new Message();
+      serverMessage.content = fullLlmResponse;
+      serverMessage.senderType = SenderType.LLM;
+      serverMessage.mode = mode || Mode.GENERATION;
+      serverMessage.session = session;
 
       if (isNewSession) {
-        const titlePrompt = titleSummaryPrompt(content, llmResponse);
+        const titlePrompt = titleSummaryPrompt(content, fullLlmResponse);
         const generatedTitle = await LLMService.ask(titlePrompt);
         if (generatedTitle && !generatedTitle.includes("unavailable")) {
           session.title = generatedTitle.replace(/^"|"$/g, "").trim();
@@ -100,12 +99,18 @@ export class MessageController {
         }
       }
 
-      await messageRepo.save(serverResponse);
+      const savedMessage = await messageRepo.save(serverMessage);
 
-      res.status(201).json(serverResponse);
+      res.write(`data: ${JSON.stringify({ type: "DONE", messageId: savedMessage.id, sessionId: session.id })}\n\n`);
+      res.end();
     } catch (error) {
       console.error("Send message error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      if (!res.headersSent) {
+        res.status(500).json({ message: "Internal server error" });
+      } else {
+        res.write(`data: ${JSON.stringify({ error: "Stream failed" })}\n\n`);
+        res.end();
+      }
     }
   }
 
@@ -118,7 +123,6 @@ export class MessageController {
         where: { user: { id: userId } },
         order: { lastActivityAt: "DESC" },
       });
-
       res.status(200).json(sessions);
     } catch (error) {
       console.error("Get sessions error:", error);
@@ -138,7 +142,6 @@ export class MessageController {
 
       const sessionRepo = AppDataSource.getRepository(Session);
       const messageRepo = AppDataSource.getRepository(Message);
-
       const session = await sessionRepo.findOne({
         where: { id: parseInt(sessionId) },
         relations: ["user"],
@@ -178,7 +181,6 @@ export class MessageController {
       }
 
       const sessionRepo = AppDataSource.getRepository(Session);
-
       const session = await sessionRepo.findOne({
         where: { id: parseInt(sessionId) },
         relations: ["user"],
