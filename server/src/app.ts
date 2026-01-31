@@ -4,6 +4,7 @@ import helmet from "helmet";
 
 import authRoutes from "./routes/auth.routes";
 import messageRoutes from "./routes/message.routes";
+import snippetRoutes from "./routes/snippet.routes";
 
 const app: Application = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use("/api", authRoutes);
 app.use("/api/chat", messageRoutes);
+app.use("/api/snippets", snippetRoutes);
 
 app.get("/api/health", (req: Request, res: Response) => {
   res.json({ message: "Backend Server is running!" });

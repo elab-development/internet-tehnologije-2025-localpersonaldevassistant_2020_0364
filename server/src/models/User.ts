@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { Session } from "./Session";
+import { Snippet } from "./Snippet";
 import { UserRole } from "./Enums";
 
 @Entity()
@@ -31,4 +32,7 @@ export class User {
 
   @OneToMany(() => Session, (session) => session.user)
   sessions!: Session[];
+
+  @OneToMany(() => Snippet, (snippet) => snippet.user)
+  snippets!: Snippet[];
 }

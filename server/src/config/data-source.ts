@@ -6,6 +6,7 @@ import { Message } from "../models/Message";
 import { Session } from "../models/Session";
 import { Feedback } from "../models/Feedback";
 import { BlacklistedToken } from "../models/BlacklistedToken";
+import { Snippet } from "../models/Snippet";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -18,7 +19,7 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: false,
 
-  entities: [User, Session, Message, Feedback, BlacklistedToken],
+  entities: [User, Session, Message, Feedback, BlacklistedToken, Snippet],
 
   migrations: ["src/migrations/*.ts"],
   subscribers: [],
