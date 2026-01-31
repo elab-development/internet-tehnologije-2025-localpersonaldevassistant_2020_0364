@@ -9,8 +9,12 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import remarkGfm from "remark-gfm";
+import { StarFillIcon, StarIcon } from "../assets/StarIcons";
+import { useChat } from "../context/ChatContext";
 
 const MessageTile = (message: Message) => {
+  const { snippets, addSnippet, removeSnippet } = useChat();
+
   const [isPositive, setIsPositive] = useState<boolean | null>(message.feedback ? message.feedback.isPositive : null);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [comment, setComment] = useState(message.feedback?.comment || "");
@@ -21,8 +25,18 @@ const MessageTile = (message: Message) => {
     button.innerText = "Copied!";
     setTimeout(() => {
       button.innerText = "Copy";
-    }, 5000);
+    }, 2000);
     navigator.clipboard.writeText(code);
+  };
+
+  const handleToggleSnippet = async (code: string, language: string) => {
+    const existingSnippet = snippets.find((s) => s.code.trim() === code.trim());
+
+    if (existingSnippet) {
+      await removeSnippet(existingSnippet.id);
+    } else {
+      await addSnippet(code, language);
+    }
   };
 
   const handleRate = async (positive: boolean) => {
@@ -55,12 +69,22 @@ const MessageTile = (message: Message) => {
               code({ inline, className, children, ...props }: any) {
                 const match = /language-(\w+)/.exec(className || "");
                 const codeString = String(children).replace(/\n$/, "");
+                const isSaved = !inline && snippets.some((s) => s.code.trim() === codeString.trim());
 
                 return !inline && match ? (
                   <div className="codeBlockWrapper">
                     <div className="codeBlockHeader">
                       <span>{match[1]}</span>
-                      <button onClick={(e) => handleCopyCode(codeString, e)}>Copy</button>
+                      <div className="codeBlockActions">
+                        <button
+                          onClick={() => handleToggleSnippet(codeString, match[1])}
+                          title={isSaved ? "Remove from Snippets" : "Save Snippet"}
+                          className={isSaved ? "active" : "inactive"}
+                        >
+                          {isSaved ? <StarFillIcon style={{ color: "var(--primary)" }} /> : <StarIcon />}
+                        </button>
+                        <button onClick={(e) => handleCopyCode(codeString, e)}>Copy</button>
+                      </div>
                     </div>
                     <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" children={codeString} {...props} />
                   </div>

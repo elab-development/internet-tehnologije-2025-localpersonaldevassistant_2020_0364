@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChatContext } from "./ChatContext";
 import CommunicationController from "../communication/CommunicationController";
-import type { Message, Session, Mode } from "../types/types";
+import type { Message, Session, Mode, Snippet } from "../types/types";
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const { sessionId } = useParams();
@@ -11,6 +11,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -32,8 +33,35 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     navigate("/chat");
   };
 
+  const refreshSnippets = () => {
+    CommunicationController.sendRequest("GET", "/api/snippets", {}).then((response) => {
+      if (response.ok) {
+        setSnippets(response.payload as Snippet[]);
+      }
+    });
+  };
+
+  const addSnippet = async (code: string, language: string) => {
+    if (snippets.some((s) => s.code === code)) return;
+
+    const response = await CommunicationController.sendRequest("POST", "/api/snippets", {
+      body: { code, language },
+    });
+
+    if (response.ok) {
+      const newSnippet = (response.payload as { snippet: Snippet }).snippet;
+      setSnippets((prev) => [newSnippet, ...prev]);
+    }
+  };
+
+  const removeSnippet = async (id: number) => {
+    setSnippets((prev) => prev.filter((s) => s.id !== id));
+    await CommunicationController.sendRequest("DELETE", `/api/snippets/${id}`, {});
+  };
+
   useEffect(() => {
     refreshSessions();
+    refreshSnippets();
   }, []);
 
   useEffect(() => {
@@ -106,7 +134,17 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       },
       (finalData: { messageId?: number; sessionId?: number }) => {
         if (finalData.messageId) {
-          setMessages((prev) => prev.map((msg) => (msg.id === tempLlmId ? { ...msg, id: finalData.messageId!, isStreaming: false } : msg)));
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === tempLlmId
+                ? {
+                    ...msg,
+                    id: finalData.messageId!,
+                    isStreaming: false,
+                  }
+                : msg,
+            ),
+          );
         }
 
         if (finalData.sessionId) {
@@ -132,6 +170,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         refreshSessions,
         sendMessageStream,
         startNewSession,
+        snippets,
+        addSnippet,
+        removeSnippet,
       }}
     >
       {children}

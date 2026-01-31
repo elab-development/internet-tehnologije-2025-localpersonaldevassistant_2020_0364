@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Message, Session, Mode } from "../types/types";
+import type { Message, Session, Mode, Snippet } from "../types/types";
 
 export interface ChatContextType {
   currentSessionId: number | null;
@@ -12,6 +12,9 @@ export interface ChatContextType {
   refreshSessions: () => void;
   sendMessageStream: (content: string, mode: Mode) => Promise<void>;
   startNewSession: () => void;
+  snippets: Snippet[];
+  addSnippet: (code: string, language: string) => Promise<void>;
+  removeSnippet: (id: number) => Promise<void>;
 }
 
 export const ChatContext = createContext<ChatContextType | undefined>(undefined);

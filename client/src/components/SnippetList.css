@@ -1,0 +1,71 @@
+#snippetList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding: 0 4px;
+}
+
+.snippetItem {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  transition: all 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.snippetItem:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-color);
+}
+
+.snippetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.snippetLang {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  background-color: rgba(68, 175, 105, 0.2);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.snippetTitle {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deleteSnippetBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.snippetItem:hover .deleteSnippetBtn {
+  opacity: 1;
+}
+
+.deleteSnippetBtn:hover {
+  color: var(--accent-danger);
+}

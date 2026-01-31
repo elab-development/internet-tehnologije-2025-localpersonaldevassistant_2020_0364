@@ -24,3 +24,11 @@ export interface Message {
   feedback?: Feedback;
   isStreaming?: boolean;
 }
+
+export interface Snippet {
+  id: number;
+  language: string;
+  code: string;
+  title: string;
+  createdAt?: string;
+}
