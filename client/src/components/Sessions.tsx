@@ -10,8 +10,9 @@ const Sessions = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+      <h3 className="appTitle">Local DEV Assistant</h3>
       <button className="newChatBtn" onClick={startNewSession}>
-        + NEW CHAT
+        NEW CHAT
       </button>
 
       <div className="tabContainer">

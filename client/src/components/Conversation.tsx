@@ -23,7 +23,7 @@ const Conversation = (props: Props) => {
       <div ref={messagesEndRef} />
 
       {props.messages.map((message) => (
-        <MessageTile key={message.id} {...message} />
+         <MessageTile key={`${message.createdAt}-${message.senderType}`} {...message} />
       ))}
     </div>
   );
