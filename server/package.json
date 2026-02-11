@@ -13,7 +13,10 @@
     "typeorm-ts-node-commonjs": "^0.3.20"
   },
   "scripts": {
-    "start": "npm install && dotenv -- cmd /c \"(docker start ollama >nul 2>&1 || docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama) && echo Downloading %LLM_MODEL%... && docker exec ollama ollama pull %LLM_MODEL% && nodemon src/server.ts\""
+    "build": "npx tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "migration:run": "npx typeorm migration:run -d dist/config/data-source.js"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

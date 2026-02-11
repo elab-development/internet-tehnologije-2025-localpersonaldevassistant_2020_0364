@@ -82,6 +82,7 @@ export class MessageController {
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Connection", "keep-alive");
       res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("X-Accel-Buffering", "no");
 
       const fullLlmResponse = await LLMService.streamAsk(finalPrompt, res);
 

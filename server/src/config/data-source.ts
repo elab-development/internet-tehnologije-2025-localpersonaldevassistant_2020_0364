@@ -17,10 +17,10 @@ export const AppDataSource = new DataSource({
   database: Config.DB_NAME,
 
   synchronize: false,
-  logging: false,
+  logging: true,
 
   entities: [User, Session, Message, Feedback, BlacklistedToken, Snippet],
 
-  migrations: ["src/migrations/*.ts"],
+  migrations: [process.env.NODE_ENV === "production" ? "dist/migrations/*.js" : "src/migrations/*.ts"],
   subscribers: [],
 });

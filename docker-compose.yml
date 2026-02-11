@@ -1,0 +1,49 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: ["/bin/sh", "-c", "/bin/ollama serve & sleep 5 && ollama pull ${LLM_MODEL} && wait"]
+
+  backend:
+    build: ./server
+    restart: on-failure
+    depends_on:
+      - db
+      - ollama
+    environment:
+      PORT: ${PORT}
+      
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      
+      JWT_SECRET: ${JWT_SECRET}
+      
+      LLM_API_URL: ${LLM_API_URL}
+      LLM_MODEL: ${LLM_MODEL}
+
+  frontend:
+    build: ./client
+    restart: always
+    ports:
+      - "8080:80" 
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+  ollama_data:
