@@ -12,6 +12,40 @@ import debugPrompt from "../prompts/debugPrompt";
 import generationPrompt from "../prompts/generationPrompt";
 
 export class MessageController {
+  /**
+   * @openapi
+   * /api/chat:
+   *   post:
+   *     tags:
+   *       - Chat
+   *     summary: Send message to chat
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - content
+   *             properties:
+   *               content:
+   *                 type: string
+   *                 description: User message content
+   *     responses:
+   *       200:
+   *         description: Chat response
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 reply:
+   *                   type: string
+   *       401:
+   *         description: Unauthorized
+   */
   static async sendMessage(req: Request, res: Response): Promise<void> {
     try {
       const { content, sessionId, mode } = req.body;
@@ -116,6 +150,25 @@ export class MessageController {
     }
   }
 
+  /**
+   * @openapi
+   * /api/chat/sessions:
+   *   get:
+   *     tags:
+   *       - Chat
+   *     summary: Get all sessions
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Session list
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Session'
+   */
   static async getAllSessions(req: Request, res: Response): Promise<void> {
     try {
       const { userId } = res.locals.jwtPayload;
@@ -132,6 +185,31 @@ export class MessageController {
     }
   }
 
+  /**
+   * @openapi
+   * /api/chat/{sessionId}/messages:
+   *   get:
+   *     tags:
+   *       - Chat
+   *     summary: Get messages by session
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: sessionId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Message history
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Message'
+   */
   static async getMessagesBySession(req: Request, res: Response): Promise<void> {
     try {
       const { userId } = res.locals.jwtPayload;
@@ -172,6 +250,45 @@ export class MessageController {
     }
   }
 
+  /**
+   * @openapi
+   * /api/chat/sessions/{sessionId}:
+   *   put:
+   *     tags:
+   *       - Chat
+   *     summary: Change session title
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: sessionId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - title
+   *             properties:
+   *               title:
+   *                 type: string
+   *                 example: My Updated Chat Title
+   *     responses:
+   *       200:
+   *         description: Title updated
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Title updated successfully
+   */
   static async updateSessionTitle(req: Request, res: Response): Promise<void> {
     try {
       const { sessionId } = req.params;
@@ -209,6 +326,38 @@ export class MessageController {
     }
   }
 
+  /**
+   * @openapi
+   * /api/chat/{messageId}/feedback:
+   *   post:
+   *     tags:
+   *       - Chat
+   *     summary: Add feedback
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: messageId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - isPositive
+   *             properties:
+   *               isPositive:
+   *                 type: boolean
+   *               comment:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: Feedback saved
+   */
   static async addFeedback(req: Request, res: Response): Promise<void> {
     try {
       const { messageId } = req.params;

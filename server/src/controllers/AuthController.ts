@@ -8,6 +8,42 @@ import { BlacklistedToken } from "../models/BlacklistedToken";
 import { UserRole } from "../models/Enums";
 
 export class AuthController {
+  /**
+   * @openapi
+   * /api/login:
+   *   post:
+   *     tags:
+   *       - Auth
+   *     summary: User login
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - username
+   *               - password
+   *             properties:
+   *               username:
+   *                 type: string
+   *               password:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: Login successful
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 token:
+   *                   type: string
+   *       401:
+   *         description: Invalid credentials
+   */
   static async login(req: Request, res: Response): Promise<void> {
     try {
       const { username, password } = req.body;
@@ -35,6 +71,33 @@ export class AuthController {
     }
   }
 
+  /**
+   * @openapi
+   * /api/guest:
+   *   post:
+   *     tags:
+   *       - Auth
+   *     summary: Login as guest
+   *     responses:
+   *       200:
+   *         description: Guest login successful
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 token:
+   *                   type: string
+   *                 user:
+   *                   type: object
+   *                   properties:
+   *                     username:
+   *                       type: string
+   *                     role:
+   *                       type: string
+   */
   static async loginAsGuest(req: Request, res: Response): Promise<void> {
     try {
       const userRepo = AppDataSource.getRepository(User);
@@ -58,6 +121,33 @@ export class AuthController {
     }
   }
 
+  /**
+   * @openapi
+   * /api/register:
+   *   post:
+   *     tags:
+   *       - Auth
+   *     summary: Register new user
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - username
+   *               - password
+   *             properties:
+   *               username:
+   *                 type: string
+   *               password:
+   *                 type: string
+   *     responses:
+   *       201:
+   *         description: User registered successfully
+   *       409:
+   *         description: Username already exists
+   */
   static async register(req: Request, res: Response): Promise<void> {
     try {
       const { username, password } = req.body;
@@ -93,6 +183,27 @@ export class AuthController {
     }
   }
 
+  /**
+   * @openapi
+   * /api/logout:
+   *   post:
+   *     tags:
+   *       - Auth
+   *     summary: Logout (Token invalidation)
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Logout successful
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Logged out successfully
+   */
   static async logout(req: Request, res: Response): Promise<void> {
     try {
       const authHeader = req.headers["authorization"];
