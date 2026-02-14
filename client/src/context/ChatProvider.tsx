@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChatContext } from "./ChatContext";
 import CommunicationController from "../communication/CommunicationController";
-import type { Message, Session, Mode, Snippet } from "../types/types";
+import type { Message, Session, Mode, Snippet, ModelProvider } from "../types/types";
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const { sessionId } = useParams();
@@ -105,7 +105,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setMessages((prev) => [message, ...prev]);
   };
 
-  const sendMessageStream = async (content: string, mode: Mode) => {
+  const sendMessageStream = async (content: string, mode: Mode, provider: ModelProvider) => {
     const userMsg: Message = {
       id: Date.now(),
       content,
@@ -128,7 +128,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
     await CommunicationController.streamRequest(
       "/api/chat",
-      { content, sessionId: currentSessionId, mode },
+      { content, sessionId: currentSessionId, mode, provider },
       (chunk) => {
         setMessages((prev) => prev.map((msg) => (msg.id === tempLlmId ? { ...msg, content: msg.content + chunk } : msg)));
       },

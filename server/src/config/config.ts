@@ -15,10 +15,30 @@ interface AppConfig {
 
   LLM_API_URL: string;
   LLM_MODEL: string;
+
+  GROQ_API_KEY: string;
+  GROQ_MODEL: string;
+
+  GOOGLE_API_KEY: string;
+  GOOGLE_MODEL: string;
 }
 
 const loadConfig = (): AppConfig => {
-  const requiredEnvVars = ["PORT", "DB_HOST", "DB_USER", "DB_PASS", "DB_NAME", "DB_PORT", "JWT_SECRET", "LLM_API_URL", "LLM_MODEL"];
+  const requiredEnvVars = [
+    "PORT",
+    "DB_HOST",
+    "DB_USER",
+    "DB_PASS",
+    "DB_NAME",
+    "DB_PORT",
+    "JWT_SECRET",
+    "LLM_API_URL",
+    "LLM_MODEL",
+    "GROQ_API_KEY",
+    "GROQ_MODEL",
+    "GOOGLE_API_KEY",
+    "GOOGLE_MODEL",
+  ];
   for (const key of requiredEnvVars) {
     if (process.env[key] === undefined || process.env[key] === null) {
       console.error(`FATAL ERROR: Environment variable ${key} is not defined.`);
@@ -39,6 +59,12 @@ const loadConfig = (): AppConfig => {
 
     LLM_API_URL: process.env.LLM_API_URL!,
     LLM_MODEL: process.env.LLM_MODEL!,
+
+    GROQ_API_KEY: process.env.GROQ_API_KEY!,
+    GROQ_MODEL: process.env.GROQ_MODEL!,
+
+    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY!,
+    GOOGLE_MODEL: process.env.GOOGLE_MODEL!,
   };
 };
 

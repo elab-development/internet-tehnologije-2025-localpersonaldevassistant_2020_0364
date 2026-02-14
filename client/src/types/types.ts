@@ -9,6 +9,8 @@ export type SenderType = "USER" | "LLM";
 
 export type Mode = "ANALYSIS" | "GENERATION" | "DEBUG";
 
+export type ModelProvider = "OLLAMA" | "GROQ" | "GOOGLE";
+
 export interface Feedback {
   id: number;
   isPositive: boolean;

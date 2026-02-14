@@ -3,9 +3,9 @@ import { AppDataSource } from "../config/data-source";
 import { Message } from "../models/Message";
 import { Session } from "../models/Session";
 import { User } from "../models/User";
-import { Feedback } from "../models/Feedback"; // [NEW] Import Feedback
+import { Feedback } from "../models/Feedback";
 import { SenderType, Mode } from "../models/Enums";
-import { LLMService } from "../services/LLMService";
+import { LLMGateway, ModelProvider } from "../services/LLMGateway";
 import titleSummaryPrompt from "../prompts/titleSummary";
 import analysisPrompt from "../prompts/analysisPrompt";
 import debugPrompt from "../prompts/debugPrompt";
@@ -48,7 +48,7 @@ export class MessageController {
    */
   static async sendMessage(req: Request, res: Response): Promise<void> {
     try {
-      const { content, sessionId, mode } = req.body;
+      const { content, sessionId, mode, provider: modelProvider } = req.body;
       const { userId } = res.locals.jwtPayload;
 
       if (!content) {
@@ -118,7 +118,10 @@ export class MessageController {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("X-Accel-Buffering", "no");
 
-      const fullLlmResponse = await LLMService.streamAsk(finalPrompt, res);
+      const selectedProvider = modelProvider || ModelProvider.OLLAMA;
+      const providerService = LLMGateway.getProvider(selectedProvider);
+
+      const fullLlmResponse = await providerService.streamAsk(finalPrompt, res);
 
       const serverMessage = new Message();
       serverMessage.content = fullLlmResponse;
@@ -128,7 +131,10 @@ export class MessageController {
 
       if (isNewSession) {
         const titlePrompt = titleSummaryPrompt(content, fullLlmResponse);
-        const generatedTitle = await LLMService.ask(titlePrompt);
+
+        const localProvider = LLMGateway.getProvider(ModelProvider.OLLAMA);
+        const generatedTitle = await localProvider.ask(titlePrompt);
+
         if (generatedTitle && !generatedTitle.includes("unavailable")) {
           session.title = generatedTitle.replace(/^"|"$/g, "").trim();
           await sessionRepo.save(session);

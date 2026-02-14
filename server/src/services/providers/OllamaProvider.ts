@@ -1,9 +1,10 @@
 import axios from "axios";
-import { Config } from "../config/config";
 import { Response } from "express";
+import { Config } from "../../config/config";
+import { ILLMProvider } from "./ILLMProvider";
 
-export class LLMService {
-  static async streamAsk(prompt: string, res: Response): Promise<string> {
+export class OllamaProvider implements ILLMProvider {
+  async streamAsk(prompt: string, res: Response): Promise<string> {
     const response = await axios.post(
       Config.LLM_API_URL,
       {
@@ -20,9 +21,9 @@ export class LLMService {
     return new Promise((resolve, reject) => {
       response.data.on("data", (chunk: Buffer) => {
         const lines = chunk
-        .toString()
-        .split("\n")
-        .filter((line) => line.trim() !== "");
+          .toString()
+          .split("\n")
+          .filter((line) => line.trim() !== "");
 
         for (const line of lines) {
           try {
@@ -33,7 +34,7 @@ export class LLMService {
               res.write(`data: ${JSON.stringify({ content: text })}\n\n`);
             }
           } catch (e) {
-            /* ignore parse errors */
+            // ignore parse errors
           }
         }
       });
@@ -43,7 +44,7 @@ export class LLMService {
     });
   }
 
-  static async ask(prompt: string): Promise<string> {
+  async ask(prompt: string): Promise<string> {
     try {
       const response = await axios.post(Config.LLM_API_URL, {
         model: Config.LLM_MODEL,
@@ -56,10 +57,10 @@ export class LLMService {
         },
       });
 
-      return response.data?.response || "I received an empty response from the AI.";
+      return response.data?.response || "Empty response from Ollama.";
     } catch (error) {
-      console.error("[LLMService] Error:", error);
-      return "Local AI is unavailable. Please check if Docker is running and the qwen model is downloaded.";
+      console.error("[OllamaProvider] Error:", error);
+      return "Local AI unavailable.";
     }
   }
 }
