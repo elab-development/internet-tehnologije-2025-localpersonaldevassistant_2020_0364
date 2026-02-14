@@ -13,7 +13,7 @@ const startServer = async () => {
     await AppDataSource.initialize();
     console.log("Data Source has been initialized!");
 
-    app.listen(Config.PORT, "0.0.0.0", () => {
+    app.listen(Config.PORT, "::", () => {
       console.log(`
         ${green}●${reset} ${cyan}Server started${reset}
         ${dim}--------------------------------------------------${reset}
