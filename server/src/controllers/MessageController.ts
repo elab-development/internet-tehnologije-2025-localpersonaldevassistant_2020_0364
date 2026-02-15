@@ -405,4 +405,50 @@ export class MessageController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  /**
+   * @openapi
+   * /api/chat/stats/daily:
+   *   get:
+   *     tags:
+   *       - Chat
+   *     summary: Get message count per day for the last 30 days
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Stats array
+   */
+  static async getDailyStats(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId } = res.locals.jwtPayload;
+      const messageRepo = AppDataSource.getRepository(Message);
+
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const stats = await messageRepo
+        .createQueryBuilder("message")
+        .select("DATE(message.createdAt)", "date")
+        .addSelect("COUNT(message.id)", "count")
+        .innerJoin("message.session", "session")
+        .innerJoin("session.user", "user")
+        .where("user.id = :userId", { userId })
+        .andWhere("message.senderType = :type", { type: SenderType.USER })
+        .andWhere("message.createdAt >= :fromDate", { fromDate: thirtyDaysAgo })
+        .groupBy("DATE(message.createdAt)")
+        .orderBy("date", "ASC")
+        .getRawMany();
+
+      const formattedStats = stats.map((s) => ({
+        date: typeof s.date === "string" ? s.date : s.date.toISOString().split("T")[0],
+        count: parseInt(s.count),
+      }));
+
+      res.status(200).json(formattedStats);
+    } catch (error) {
+      console.error("Get stats error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
