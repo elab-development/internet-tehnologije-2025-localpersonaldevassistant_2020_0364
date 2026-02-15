@@ -67,6 +67,6 @@ jobs:
 
       - name: Trigger Railway Deploy
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
-        run: railway redeploy --service backend
+        run: railway redeploy --service backend --yes
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} 
