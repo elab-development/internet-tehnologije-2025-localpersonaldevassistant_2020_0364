@@ -19,7 +19,8 @@
     "build": "npx tsc",
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "migration:run": "npx typeorm migration:run -d dist/config/data-source.js"
+    "migration:run": "npx typeorm migration:run -d dist/config/data-source.js",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
