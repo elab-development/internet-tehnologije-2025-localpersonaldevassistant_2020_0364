@@ -67,6 +67,6 @@ jobs:
 
       - name: Trigger Railway Deploy
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
-        run: railway service:update --service backend --image ${{ secrets.DOCKERHUB_USERNAME }}/dev-assistant-backend:latest
+        run: railway redeploy --service backend
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} 
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
