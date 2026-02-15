@@ -18,7 +18,7 @@ describe("RoleMiddleware", () => {
     middleware(req, res, next);
 
     expect(next).toHaveBeenCalled();
-    expect(res.status).not.toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled(); 
   });
 
   it("should return 403 if user does not have required role", () => {
