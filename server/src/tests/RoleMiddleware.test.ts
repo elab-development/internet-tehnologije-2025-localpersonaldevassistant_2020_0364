@@ -37,7 +37,7 @@ describe("RoleMiddleware", () => {
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith({
-      message: "Access denied: Insufficient permissions",
+      message: "Access denied: Insufficient permissions.",
     });
   });
 });
