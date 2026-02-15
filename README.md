@@ -51,4 +51,16 @@ The project utilizes a modern, type-safe stack:
 
 - Node.js (v20 or higher)
 - MySQL Server
-- Docker Desktop (Optional, for containerized run - preffered for testing of application)
+- Docker Desktop (Optional, for containerized run - preffered for testing application)
+
+### Starting application
+
+1. Clone git project to your local machine using `git clone https://github.com/elab-development/internet-tehnologije-2025-localpersonaldevassistant_2020_0364.git`
+2. Navigate to root folder of project
+3. Copy `.env.example` file and name it `.env`
+4. Fill variables with proper values (API keys, LLM Models, DB Credentials, Ports, etc...)
+5. Make sure Docker Desktop is running
+6. Run `docker-compose up -d --build` command
+7. Wait until app is built and started
+8. Navigate to localhost:8080
+9. Enjoy!
