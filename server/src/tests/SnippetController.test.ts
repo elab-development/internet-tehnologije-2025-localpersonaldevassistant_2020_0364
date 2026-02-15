@@ -21,7 +21,10 @@ describe("SnippetController - Get Snippets", () => {
     mockSnippetRepo.find.mockResolvedValue(mockSnippets);
 
     const req = mockRequest();
-    const res = mockResponse();
+    const res = mockResponse() as any;
+
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn();
 
     res.locals = { jwtPayload: { userId: 1 } };
 
@@ -39,7 +42,11 @@ describe("SnippetController - Get Snippets", () => {
     mockSnippetRepo.find.mockRejectedValue(new Error("Database error"));
 
     const req = mockRequest();
-    const res = mockResponse();
+    const res = mockResponse() as any;
+
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn();
+
     res.locals = { jwtPayload: { userId: 1 } };
 
     await SnippetController.getSnippets(req, res);

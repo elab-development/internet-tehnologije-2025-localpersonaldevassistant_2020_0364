@@ -6,8 +6,11 @@ import { describe, expect, it, jest } from "@jest/globals";
 describe("RoleMiddleware", () => {
   it("should call next() if user has required role", () => {
     const req = mockRequest();
-    const res = mockResponse();
+    const res = mockResponse() as any;
+
     const next = jest.fn();
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn();
 
     res.locals = { jwtPayload: { role: UserRole.ADMIN } };
 
@@ -20,8 +23,11 @@ describe("RoleMiddleware", () => {
 
   it("should return 403 if user does not have required role", () => {
     const req = mockRequest();
-    const res = mockResponse();
+    const res = mockResponse() as any;
+
     const next = jest.fn();
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn();
 
     res.locals = { jwtPayload: { role: UserRole.GUEST } };
 
