@@ -1,0 +1,13 @@
+process.env.PORT = "3000";
+process.env.DB_HOST = "localhost";
+process.env.DB_USER = "test";
+process.env.DB_PASS = "test";
+process.env.DB_NAME = "test_db";
+process.env.DB_PORT = "3306";
+process.env.JWT_SECRET = "test_secret";
+process.env.LLM_API_URL = "http://localhost:11434";
+process.env.LLM_MODEL = "llama3";
+process.env.GROQ_API_KEY = "test_groq";
+process.env.GROQ_MODEL = "llama3";
+process.env.GOOGLE_API_KEY = "test_google";
+process.env.GOOGLE_MODEL = "gemini";
