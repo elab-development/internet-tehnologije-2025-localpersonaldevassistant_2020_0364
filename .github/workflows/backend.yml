@@ -60,3 +60,13 @@ jobs:
           context: ./server
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/dev-assistant-backend:latest
+
+      - name: Install Railway CLI
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        run: npm i -g @railway/cli
+
+      - name: Trigger Railway Deploy
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        run: railway service:update --service backend --image ${{ secrets.DOCKERHUB_USERNAME }}/dev-assistant-backend:latest
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} 
