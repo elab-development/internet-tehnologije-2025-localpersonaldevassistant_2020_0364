@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ChatHeader from "../components/ChatHeader";
 import Conversation from "../components/Conversation";
 import InputComponent from "../components/InputComponent";
@@ -27,12 +27,12 @@ const ChatPage = () => {
       <div id="sidebar">
         <Sessions />
         <div id="userProfileContainer">
-          <div className="userInfo">
+          <Link to="/stats" className="userInfo" style={{ textDecoration: "none", cursor: "pointer" }}>
             <div className="avatarCircle">{userInitial}</div>
             <span className="userName" title={username}>
               {username}
             </span>
-          </div>
+          </Link>
           <button id="logoutButton" onClick={handleLogout} title="Logout">
             LOGOUT
           </button>
