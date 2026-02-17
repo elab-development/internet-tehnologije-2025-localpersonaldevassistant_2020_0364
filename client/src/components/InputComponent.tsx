@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useChat } from "../context/ChatContext";
 import type { Mode, ModelProvider } from "../types/types";
 import "./InputComponent.css";
+import { StopIcon } from "../assets/StopIcon";
 import sendIcon from "../assets/send-icon.svg";
 
 const InputComponent = () => {
-  const { sendMessageStream } = useChat();
+  const { sendMessageStream, isLoading, stopGeneration } = useChat();
 
   const [selectedMode, setSelectedMode] = useState<Mode>("GENERATION");
   const [selectedProvider, setSelectedProvider] = useState<ModelProvider>("OLLAMA");
@@ -13,6 +14,12 @@ const InputComponent = () => {
 
   function handleSendButtonClick(e: React.FormEvent) {
     e.preventDefault();
+
+    if (isLoading) {
+      stopGeneration();
+      return;
+    }
+
     if (!inputValue.trim()) return;
 
     sendMessageStream(inputValue, selectedMode, selectedProvider);
@@ -50,8 +57,8 @@ const InputComponent = () => {
           </select>
         </div>
 
-        <button type="submit">
-          <img src={sendIcon} width="25" height="25" alt="Send" />
+        <button type="submit" title={isLoading ? "Stop Generation" : "Send Message"}>
+          {isLoading ? <StopIcon width="25" height="25" /> : <img src={sendIcon} width="25" height="25" alt="Send" />}
         </button>
       </form>
     </div>
