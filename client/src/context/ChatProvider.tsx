@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChatContext } from "./ChatContext";
@@ -13,6 +13,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const navigate = useNavigate();
 
@@ -105,7 +107,24 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setMessages((prev) => [message, ...prev]);
   };
 
+  const stopGeneration = () => {
+    setMessages((prev) => prev.map((msg) => (msg.isStreaming ? { ...msg, isStreaming: false } : msg)));
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+      setIsLoading(false);
+    }
+  };
+
   const sendMessageStream = async (content: string, mode: Mode, provider: ModelProvider) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     const userMsg: Message = {
       id: Date.now(),
       content,
@@ -125,6 +144,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       isStreaming: true,
     };
     addMessage(llmMsg);
+
+    setIsLoading(true);
 
     await CommunicationController.streamRequest(
       "/api/chat",
@@ -153,8 +174,16 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
             loadSession(finalData.sessionId);
           }
         }
+        setIsLoading(false);
+        abortControllerRef.current = null;
       },
+      abortController.signal,
     );
+
+    if (abortControllerRef.current === abortController) {
+      setIsLoading(false);
+      abortControllerRef.current = null;
+    }
   };
 
   return (
@@ -173,6 +202,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         snippets,
         addSnippet,
         removeSnippet,
+        stopGeneration,
       }}
     >
       {children}

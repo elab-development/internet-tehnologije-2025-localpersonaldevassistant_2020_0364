@@ -10,10 +10,10 @@ export class GoogleProvider implements ILLMProvider {
     this.genAI = new GoogleGenerativeAI(Config.GOOGLE_API_KEY);
   }
 
-  async streamAsk(prompt: string, res: Response): Promise<string> {
+  async streamAsk(prompt: string, onChunk: (chunk: string) => void): Promise<string> {
     if (!Config.GOOGLE_API_KEY) {
-      const msg = "Google API Key is missing on server.";
-      res.write(`data: ${JSON.stringify({ content: msg })}\n\n`);
+      const msg = "Google API Key is missing.";
+      onChunk(msg);
       return msg;
     }
 
@@ -27,23 +27,14 @@ export class GoogleProvider implements ILLMProvider {
       for await (const chunk of result.stream) {
         const chunkText = chunk.text();
         fullText += chunkText;
-
-        res.write(`data: ${JSON.stringify({ content: chunkText })}\n\n`);
+        onChunk(chunkText);
       }
 
       return fullText;
     } catch (error: any) {
-      console.error("[GoogleProvider] Error:", error);
-
-      let errorMessage = "Error connecting to Google Gemini.";
-      if (error.message?.includes("404")) {
-        errorMessage = "Model not found or API not enabled in Google Cloud Console.";
-      } else if (error.message?.includes("API key")) {
-        errorMessage = "Invalid Google API Key.";
-      }
-
-      res.write(`data: ${JSON.stringify({ content: errorMessage })}\n\n`);
-      return errorMessage;
+      const msg = "Error connecting to Gemini";
+      onChunk(msg);
+      return msg;
     }
   }
 

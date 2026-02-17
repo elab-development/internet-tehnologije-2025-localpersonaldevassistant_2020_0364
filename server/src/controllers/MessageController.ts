@@ -121,24 +121,57 @@ export class MessageController {
       const selectedProvider = modelProvider || ModelProvider.OLLAMA;
       const providerService = LLMGateway.getProvider(selectedProvider);
 
-      const fullLlmResponse = await providerService.streamAsk(finalPrompt, res);
-
       const serverMessage = new Message();
-      serverMessage.content = fullLlmResponse;
+      serverMessage.content = "";
       serverMessage.senderType = SenderType.LLM;
       serverMessage.mode = mode || Mode.GENERATION;
       serverMessage.session = session;
 
-      if (isNewSession) {
-        const titlePrompt = titleSummaryPrompt(content, fullLlmResponse);
+      let accumulatedResponse = "";
+      let isSaved = false;
 
-        const localProvider = LLMGateway.getProvider(ModelProvider.OLLAMA);
-        const generatedTitle = await localProvider.ask(titlePrompt);
+      const saveToDb = async (finalText: string) => {
+        if (isSaved) return;
+        isSaved = true;
 
-        if (generatedTitle && !generatedTitle.includes("unavailable")) {
-          session.title = generatedTitle.replace(/^"|"$/g, "").trim();
-          await sessionRepo.save(session);
+        serverMessage.content = finalText;
+        const savedMessage = await messageRepo.save(serverMessage);
+
+        if (!res.writableEnded) {
+          res.write(`data: ${JSON.stringify({ type: "DONE", messageId: savedMessage.id, sessionId: session.id })}\n\n`);
+          res.end();
         }
+      };
+
+      res.on("close", async () => {
+        if (!isSaved) {
+          console.log("Client closed connection. Saving partial response...");
+          await saveToDb(accumulatedResponse);
+        }
+      });
+
+      try {
+        await providerService.streamAsk(finalPrompt, (chunk) => {
+          res.write(`data: ${JSON.stringify({ content: chunk })}\n\n`);
+          accumulatedResponse += chunk;
+        });
+
+        await saveToDb(accumulatedResponse);
+
+        if (isNewSession) {
+          const titlePrompt = titleSummaryPrompt(content, accumulatedResponse);
+
+          const localProvider = LLMGateway.getProvider(ModelProvider.OLLAMA);
+          const generatedTitle = await localProvider.ask(titlePrompt);
+
+          if (generatedTitle && !generatedTitle.includes("unavailable")) {
+            session.title = generatedTitle.replace(/^"|"$/g, "").trim();
+            await sessionRepo.save(session);
+          }
+        }
+      } catch (streamError) {
+        console.error("Streaming error", streamError);
+        await saveToDb(accumulatedResponse);
       }
 
       const savedMessage = await messageRepo.save(serverMessage);
@@ -147,12 +180,7 @@ export class MessageController {
       res.end();
     } catch (error) {
       console.error("Send message error:", error);
-      if (!res.headersSent) {
-        res.status(500).json({ message: "Internal server error" });
-      } else {
-        res.write(`data: ${JSON.stringify({ error: "Stream failed" })}\n\n`);
-        res.end();
-      }
+      if (!res.headersSent) res.status(500).json({ message: "Internal server error" });
     }
   }
 
@@ -402,6 +430,52 @@ export class MessageController {
       res.status(200).json({ message: "Feedback submitted", feedback });
     } catch (error) {
       console.error("Feedback error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  /**
+   * @openapi
+   * /api/chat/stats/daily:
+   *   get:
+   *     tags:
+   *       - Chat
+   *     summary: Get message count per day for the last 30 days
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Stats array
+   */
+  static async getDailyStats(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId } = res.locals.jwtPayload;
+      const messageRepo = AppDataSource.getRepository(Message);
+
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const stats = await messageRepo
+        .createQueryBuilder("message")
+        .select("DATE(message.createdAt)", "date")
+        .addSelect("COUNT(message.id)", "count")
+        .innerJoin("message.session", "session")
+        .innerJoin("session.user", "user")
+        .where("user.id = :userId", { userId })
+        .andWhere("message.senderType = :type", { type: SenderType.USER })
+        .andWhere("message.createdAt >= :fromDate", { fromDate: thirtyDaysAgo })
+        .groupBy("DATE(message.createdAt)")
+        .orderBy("date", "ASC")
+        .getRawMany();
+
+      const formattedStats = stats.map((s) => ({
+        date: typeof s.date === "string" ? s.date : s.date.toISOString().split("T")[0],
+        count: parseInt(s.count),
+      }));
+
+      res.status(200).json(formattedStats);
+    } catch (error) {
+      console.error("Get stats error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }

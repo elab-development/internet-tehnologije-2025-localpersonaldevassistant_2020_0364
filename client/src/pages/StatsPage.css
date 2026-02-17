@@ -1,0 +1,80 @@
+#statsPage {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  background-color: var(--bg-app);
+  overflow-y: auto;
+}
+
+.statsHeader {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.statsHeader h1 {
+  font-size: 1.8rem;
+  color: var(--text-main);
+}
+
+.backBtn {
+  background-color: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backBtn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-main);
+  border-color: var(--primary);
+}
+
+.chartContainer {
+  width: 100%;
+  max-width: 900px;
+  height: 400px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.customTooltip {
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+}
+
+.customTooltip .label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+
+.customTooltip .count {
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 1.1rem;
+}

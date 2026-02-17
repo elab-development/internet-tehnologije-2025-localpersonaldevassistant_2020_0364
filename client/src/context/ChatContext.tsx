@@ -15,6 +15,7 @@ export interface ChatContextType {
   snippets: Snippet[];
   addSnippet: (code: string, language: string) => Promise<void>;
   removeSnippet: (id: number) => Promise<void>;
+  stopGeneration: () => void;
 }
 
 export const ChatContext = createContext<ChatContextType | undefined>(undefined);

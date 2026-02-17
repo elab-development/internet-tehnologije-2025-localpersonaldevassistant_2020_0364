@@ -6,11 +6,10 @@ import { ILLMProvider } from "./ILLMProvider";
 export class GroqProvider implements ILLMProvider {
   private apiUrl = "https://api.groq.com/openai/v1/chat/completions";
 
-  async streamAsk(prompt: string, res: Response): Promise<string> {
+  async streamAsk(prompt: string, onChunk: (chunk: string) => void): Promise<string> {
     if (!Config.GROQ_API_KEY) {
-      const msg = "Groq API Key is missing on server.";
-      res.write(`data: ${JSON.stringify({ content: msg })}\n\n`);
-      return msg;
+      onChunk("Groq API Key is missing.");
+      return "Error";
     }
 
     const response = await axios.post(
@@ -49,7 +48,7 @@ export class GroqProvider implements ILLMProvider {
 
               if (delta) {
                 fullText += delta;
-                res.write(`data: ${JSON.stringify({ content: delta })}\n\n`);
+                onChunk(delta);
               }
             } catch (e) {
               console.error("Error parsing Groq chunk", e);

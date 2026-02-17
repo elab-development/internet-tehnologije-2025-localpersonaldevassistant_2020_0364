@@ -67,7 +67,13 @@ class CommunicationController {
     }
   }
 
-  static async streamRequest(api: string, body: object, onChunk: (chunk: string) => void, onComplete: (data: {messageId?: number; sessionId?: number}) => void): Promise<void> {
+  static async streamRequest(
+    api: string,
+    body: object,
+    onChunk: (chunk: string) => void,
+    onComplete: (data: { messageId?: number; sessionId?: number }) => void,
+    signal?: AbortSignal,
+  ): Promise<void> {
     const token = localStorage.getItem("token") || "";
 
     try {
@@ -78,6 +84,7 @@ class CommunicationController {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
+        signal,
       });
 
       if (!response.body) return;

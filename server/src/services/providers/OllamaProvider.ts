@@ -4,7 +4,7 @@ import { Config } from "../../config/config";
 import { ILLMProvider } from "./ILLMProvider";
 
 export class OllamaProvider implements ILLMProvider {
-  async streamAsk(prompt: string, res: Response): Promise<string> {
+  async streamAsk(prompt: string, onChunk: (chunk: string) => void): Promise<string> {
     const response = await axios.post(
       Config.LLM_API_URL,
       {
@@ -31,7 +31,7 @@ export class OllamaProvider implements ILLMProvider {
             if (json.response) {
               const text = json.response;
               fullText += text;
-              res.write(`data: ${JSON.stringify({ content: text })}\n\n`);
+              onChunk(text);
             }
           } catch (e) {
             // ignore parse errors

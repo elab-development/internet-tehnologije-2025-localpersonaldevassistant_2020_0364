@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ChatPage from "./pages/ChatPage";
 import { ChatProvider } from "./context/ChatProvider";
+import StatsPage from "./pages/StatsPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         }
       />
       <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/stats" element={<StatsPage />} />
     </Routes>
   );
 }
